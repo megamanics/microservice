@@ -43,7 +43,7 @@ def findpair(pfile='prices.txt', balance=2500, giftno=2, debug=False):
 
     Returns
     -------
-    Tuple
+    Tuple ([list of gifts], balance left on the card, total of the gifts)
         A series of distinct items in the list
         whose sum is minimally under (or equal to) the gift card balance.
 
@@ -64,23 +64,27 @@ def findpair(pfile='prices.txt', balance=2500, giftno=2, debug=False):
     """
     prices = pd.read_csv(pfile, header=None, names=['item', 'price'])
     affordable = []
-    minimal = ('Not possible',balance)
+    minimal = ('Not possible', balance, 0)
     for items in it.combinations(prices.index, giftno):
-        total = np.sum([prices.price[b] for b in items])
+        total = np.sum([prices.price[b] for b in items]) #sum of gift price
         newbalance = balance - total
+        # check if new gift card balance is less then the best
         if total <= balance and newbalance < minimal[1]:
             affordable = [(prices.item[idx], prices.price[idx])
                           for idx in items]
-            minimal = (affordable,newbalance,total)
+            minimal = (affordable, newbalance, total)
             if debug:
                 print(minimal)
     return minimal
 
 def test_findpair():
     """
-        @TODO: add test functions
+        @TODO: add more test cases
     """
-    assert findpair('prices.txt', 2500, 5) == "Not possible"
+    assert findpair('prices.txt', 2500, 5) == ('Not possible', 2500, 0)
+    assert findpair('prices.txt', 500, 2) == ('Not possible', 500, 0)
+    assert findpair('prices.txt', 500, 1) == ([('Candy Bar', 500)], 0, 500)
 
 if __name__ == "__main__":
+    #@TODO: Add validations for inputs
     fire.Fire(findpair)
