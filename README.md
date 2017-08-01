@@ -1,10 +1,20 @@
-# microservice
-example of a simple microservice using Flask that has two endpoints:
+## Simple Examples in python:
+
+### Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+### Microservice 
+
+Example of a simple microservice using Flask that has two endpoints:
 
 1. /messages takes a message (a string) as a POST and returns the SHA256 hash digest of that message (in hexadecimal format)
 2. /messages/<hash> is a GET request that returns the original message. A request to a non-existent <hash> should return a 404 error.
 
-#Test from curl
+### Test from curl
+```bash
 curl -X POST -H "Content-Type: application/json" -d '{"message": "foo12345678901234567"}' http://127.0.0.1:5000/messages
 
 curl -X POST -H "Content-Type: application/json" -d '{"message": "foo"}'  http://127.0.0.1:5000/messages
@@ -31,3 +41,16 @@ Date: Wed, 31 Aug 2016 14:21:11 GMT
  "err_msg": "Message not found"
 }
 
+```
+
+### Example of a command line argument parser using Fire.
+
+```bash
+python replacex.py  -- --help
+```
+
+### Example of a search algorithm
+
+```bash
+python find_pair.py -- --help
+```

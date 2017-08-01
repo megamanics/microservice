@@ -1,0 +1,6 @@
+fire
+numpy
+hashlib
+flask
+itertools
+pandas
