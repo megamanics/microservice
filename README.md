@@ -1,4 +1,4 @@
-## Simple Examples in python:
+## Simple Examples in python 3.6:
 
 ### Installation
 
@@ -16,6 +16,11 @@ Example of a simple microservice using Flask that has two endpoints:
 ```bash
 echo -n "foo" | shasum -a 256
 2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae -
+```
+
+### Start Server
+```bash
+python flask_app.py
 ```
 
 ### Test from curl
