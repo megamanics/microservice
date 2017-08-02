@@ -3,15 +3,15 @@ Simple Flask MicroService
 """
 
 import hashlib
-from flask import Flask, request, abort
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 
-APP = Flask(__name__)
+app = Flask(__name__)
 _BIGSTR = 20
 
-APP.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-#APP.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-DB = SQLAlchemy(APP)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+DB = SQLAlchemy(app)
 
 class Message(DB.Model):
     """Construct a Message class.
@@ -64,7 +64,7 @@ def querydigest(digestxt):
     msg = Message.query.filter_by(digest=digestxt).first()
     return msg
 
-@APP.route('/')
+@app.route('/')
 def showhelp():
     """Help page
     # Arguments
@@ -73,7 +73,7 @@ def showhelp():
     """
     return 'query format: /messages/stringtext1'
 
-@APP.route('/messages/<inhash>')
+@app.route('/messages/<inhash>')
 def query(inhash):
     """Query existing hash. Implementation for a GET request that returns the original message.
     Parameters
@@ -99,11 +99,12 @@ def query(inhash):
     else:
         msg = querydigest(inhash)
         if msg is None:
-            abort(404)
+            #return jsonify({'status': 404, 'err_msg': "Message not found"})
+            return make_response(jsonify(err_msg="Message not found"),404)
         else:
-            return msg.msg
+            return jsonify(message=msg.msg)
 
-@APP.route('/all')
+@app.route('/all')
 def showall():
     """
     Implementation for service that takes a message (a string) as a POST and
@@ -120,10 +121,10 @@ def showall():
         SHA256 hash digest of that message (in hexadecimal format).
     """
     msglist = Message.query.limit(10).all()
-    [print("{},{}".format(m.msg, m.digest)) for m in msglist]
+    msglp = [print("{},{}".format(m.msg, m.digest)) for m in msglist]
     return "done"
 
-@APP.route('/messages', methods=['POST'])
+@app.route('/messages', methods=['POST'])
 def digest():
     """
     Implementation for service that takes a message (a string) as a POST and
@@ -148,12 +149,9 @@ def digest():
         msg = querymsg(msgtxt)
         if msg is None:
             msg = add(msgtxt)
-            return msg.digest
-        else:
-            return msg.digest
+        return jsonify(digest=msg.digest)
 
 if __name__ == "__main__":
-    APP.debug = True
-    #app.app_context().push()
+    app.debug = True
     DB.create_all()
-    APP.run()
+    app.run()
